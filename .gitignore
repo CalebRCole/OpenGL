@@ -1,3 +1,5 @@
 thirdparty/*
 build/*
 .dir-locals.el
+/.zig-cache/
+/zig-out/
