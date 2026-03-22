@@ -1,3 +1,7 @@
 * About
 
 This project is a simple OpenGL renderer. The goal is to learn how to use OpenGL, both for use on hardware that can't run other graphics API's and for learning graphics programming better.
+
+** To Install
+
+The recommended way to install requires you have the Nix package manager. Enter a shell in the project's root directory and run =nix develop= inside it. Then run =zig build= to compile the project, or =zig build run= to also run the package after compiling. To manually install will require you have the necessary packages installed on your system and is not supported directly by the developer.
