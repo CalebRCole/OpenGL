@@ -11,25 +11,32 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
-    const glfw = b.dependency("glfw_zig", .{
-        .target = target,
-        .optimize = optimize,
-    });
-
+    // Project Files
     exe.addCSourceFiles(.{
         .root = b.path("src"),
         .files = &.{"main.c"},
         .flags = &.{ "-Wall", "-Wextra", "-Werror", "-std=c23" },
     });
 
-    exe.addIncludePath(b.path("include"));
-    exe.addIncludePath(b.path("thirdparty"));
+    // GLAD
+    exe.addIncludePath(b.path("thirdparty/glad/include"));
+    exe.addCSourceFile(.{
+        .file = b.path("thirdparty/glad/src/glad.c"),
+        .flags = &.{"-std=c11"},
+    });
 
-    exe.linkLibrary(glfw.artifact("glfw"));
+    // System Libraries
+    if (target.result.os.tag == .windows) {
+        exe.linkSystemLibrary("opengl32");
+    } else {
+        exe.linkSystemLibrary("GL");
+    }
+    exe.linkSystemLibrary("glfw3");
     exe.linkLibC();
 
     b.installArtifact(exe);
 
+    // Compile & Run (zig build run)
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| {
