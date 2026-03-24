@@ -1,12 +1,7 @@
 .{
     .name = .OpenGL,
     .version = "0.0.1",
-    .dependencies = .{
-        .glfw_zig = .{
-            .url = "git+https://github.com/tiawl/glfw.zig#fc333fb5e86ead03ca404fb1df15464b39108f1b",
-            .hash = "glfw_zig-1.0.0-NrvYozDSGQCSlWl_LTSeRefBRIz30COr8T8FVk0wpBwh",
-        },
-    },
+    .dependencies = .{},
     .minimum_zig_version = "0.15.2",
     .paths = .{""},
     .fingerprint = 0x38fdccb707d3fe94,
