@@ -8,31 +8,31 @@ pub fn build(b: *std.Build) void {
         .root_module = b.createModule(.{
             .target = target,
             .optimize = optimize,
+            .link_libc = true,
         }),
     });
 
     // Project Files
-    exe.addCSourceFiles(.{
+    exe.root_module.addCSourceFiles(.{
         .root = b.path("src"),
         .files = &.{"main.c"},
-        .flags = &.{ "-Wall", "-Wextra", "-Werror", "-std=c23" },
+        .flags = &.{ "-Wall", "-Wextra", "-std=c23" },
     });
 
     // GLAD
-    exe.addIncludePath(b.path("thirdparty/glad/include"));
-    exe.addCSourceFile(.{
+    exe.root_module.addIncludePath(b.path("thirdparty/glad/include"));
+    exe.root_module.addCSourceFile(.{
         .file = b.path("thirdparty/glad/src/glad.c"),
         .flags = &.{"-std=c11"},
     });
 
     // System Libraries
     if (target.result.os.tag == .windows) {
-        exe.linkSystemLibrary("opengl32");
+        exe.root_module.linkSystemLibrary("opengl32", .{});
     } else {
-        exe.linkSystemLibrary("GL");
+        exe.root_module.linkSystemLibrary("GL", .{});
     }
-    exe.linkSystemLibrary("glfw3");
-    exe.linkLibC();
+    exe.root_module.linkSystemLibrary("glfw3", .{});
 
     b.installArtifact(exe);
 
