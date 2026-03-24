@@ -1,20 +1,29 @@
 {
-  description = "OpenGL Renderer for Wayland";
+  description = "OpenGL Renderer";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    zig.url = "github:mitchellh/zig-overlay";
   };
 
-  outputs = { nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      zig,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs { inherit system; };
+        zig-pkg = zig.packages.${system}.master;
       in
       {
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
-            zig
+            zig-pkg
             zls
             pkg-config
             gdb
@@ -22,29 +31,20 @@
           ];
 
           buildInputs = with pkgs; [
+            glfw
             libGL
-            libxkbcommon
-            libX11
-            libXcursor
-            libXrandr
-            libXinerama
-            libXi
-            wayland
-            wayland-protocols
-            pkg-config
           ];
 
           shellHook = ''
-            echo "--- Zig C Development Environment ---"
-            zig version
-            echo "Targeting: x86_64-linux"
+            echo "--- Development Environment ---"
+            echo "Targeting: ${system}"
+            export LD_LIBRARY_PATH="${
+              pkgs.lib.makeLibraryPath [
+                pkgs.glfw
+                pkgs.libGL
+              ]
+            }:$LD_LIBRARY_PATH"
           '';
-
-          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [
-            libGL
-            libxkbcommon
-            wayland
-          ]);
         };
       }
     );
